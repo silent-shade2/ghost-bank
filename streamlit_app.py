@@ -1,124 +1,164 @@
-import random
+# ghost_bank_app.py
+# Full app implementation 
+import streamlit as st
 import json
 import os
+import random
+import datetime
+import pandas as pd
+import matplotlib.pyplot as plt
+from cryptography.fernet import Fernet
 
-# User Data (load from a file or initialize)
-user_data = {
-    "name": "Ghost Seeker",
-    "balance": 500,
-    "debt": 0,
-    "savings": 0,
-    "investments": 0,
-    "spending_history": [],
-    "vault_locked": True,
-    "time_capsules": [],
-    "challenges_completed": []
-}
+# ----------------------------- INIT -----------------------------
 
-# Load user data from a JSON file
-def load_user_data():
-    global user_data
+def load_data():
     if os.path.exists("user_data.json"):
         with open("user_data.json", "r") as file:
-            user_data = json.load(file)
+            return json.load(file)
+    else:
+        return {
+            "name": "Ghost Seeker",
+            "balance": 500,
+            "debt": 0,
+            "savings": 0,
+            "investments": 0,
+            "spending_history": [],
+            "vault_locked": True,
+            "time_capsules": [],
+            "challenges_completed": []
+        }
 
-# Save user data to a JSON file
-def save_user_data():
+def save_data(data):
     with open("user_data.json", "w") as file:
-        json.dump(user_data, file)
+        json.dump(data, file)
 
-# Display the main menu
-def main_menu():
-    print("\nWelcome to Ghost Bank!")
-    print("1. Phantom's Financial Diary")
-    print("2. Ghostly Budget Tracker")
-    print("3. Spectral Wealth Forecast")
-    print("4. The Forgotten Vault")
-    print("5. Exit")
+user_data = load_data()
 
-    choice = input("Choose an option: ")
+# ----------------------------- STYLES -----------------------------
 
-    if choice == "1":
-        time_capsule()
-    elif choice == "2":
-        budget_tracker()
-    elif choice == "3":
-        wealth_forecast()
-    elif choice == "4":
-        forgotten_vault()
-    elif choice == "5":
-        exit_game()
-    else:
-        print("Invalid choice! Try again.")
-        main_menu()
+st.markdown("""
+    <style>
+    body, .reportview-container, .main {{
+        background-color: #0a0a0a;
+        color: #33FFB2;
+        font-family: 'Courier New', monospace;
+    }}
+    .stButton>button {{
+        background-color: #111111;
+        color: #33FFB2;
+        border-radius: 10px;
+        padding: 10px;
+    }}
+    </style>
+""", unsafe_allow_html=True)
 
-# Phantom's Financial Diary (Time Capsule)
-def time_capsule():
-    print("\nPhantom's Financial Diary")
-    entry = input("Enter your financial thoughts: ")
-    
-    if entry.strip() == "":
-        print("You must enter some text!")
-        time_capsule()
-    else:
-        user_data["time_capsules"].append(entry)
-        print(f"Your entry has been saved! You wrote: {entry}")
-        save_user_data()
-        main_menu()
+# ----------------------------- FUNCTIONS -----------------------------
 
-# Ghostly Budget Tracker
-def budget_tracker():
-    print("\nGhostly Budget Tracker")
-    print(f"Current Balance: £{user_data['balance']}")
-    print(f"Debt: £{user_data['debt']}")
-    print(f"Savings: £{user_data['savings']}")
-    main_menu()
+# 1. Black Mirror Budget AI
+def budget_ai():
+    st.subheader("Black Mirror Budget AI")
+    total_spent = sum([x['amount'] for x in user_data['spending_history']])
+    days = len(set([x['date'] for x in user_data['spending_history']])) or 1
+    avg_spending = total_spent / days
+    warning_msg = ""
 
-# Spectral Wealth Forecast
-def wealth_forecast():
-    print("\nSpectral Wealth Forecast")
-    forecast = f"In 6 months, you will have £{user_data['balance'] + random.randint(0, 1000)}."
-    print(forecast)
-    main_menu()
+    if avg_spending > 80:
+        warning_msg = "You’re on track to be overdrawn in 3 days. Reduce night spending."
+    if warning_msg:
+        st.error(warning_msg)
 
-# The Forgotten Vault (Locked until puzzle is solved)
-def forgotten_vault():
-    print("\nThe Forgotten Vault")
-    if user_data['vault_locked']:
-        print("The Vault is Locked! Solve the mystery to unlock it.")
-        vault_puzzle()
-    else:
-        print(f"The Vault contains £{user_data['savings']} in hidden funds.")
-        main_menu()
+# 2. ShadowMarket Scanner (mocked data)
+def shadow_market():
+    st.subheader("ShadowMarket Scanner")
+    tracked_items = {"Milk": 1.20, "Eggs": 2.10, "Bread": 1.50}
+    local_prices = {"Milk": 1.35, "Eggs": 2.00, "Bread": 1.75}  # Mocked
+    for item in tracked_items:
+        delta = local_prices[item] - tracked_items[item]
+        if delta > 0:
+            st.warning(f"{item} price up {round((delta/tracked_items[item])*100)}%. Alternatives available.")
 
-# Vault puzzle: user needs to solve a math question to unlock
-def vault_puzzle():
-    print("Solve this math puzzle to unlock the vault:")
-    num1 = random.randint(1, 20)
-    num2 = random.randint(1, 20)
-    answer = num1 + num2
-    
-    user_answer = input(f"What is {num1} + {num2}? ")
+# 3. Timeline Collapse Mode
+def timeline_mode():
+    st.subheader("Timeline Collapse Mode")
+    choices = ["Eat Out Daily", "Cook at Home", "Invest Spare Change", "Ignore Savings"]
+    timeline = {}
+    for choice in choices:
+        if choice == "Eat Out Daily":
+            timeline[choice] = -1000
+        elif choice == "Cook at Home":
+            timeline[choice] = 800
+        elif choice == "Invest Spare Change":
+            timeline[choice] = 1500
+        elif choice == "Ignore Savings":
+            timeline[choice] = -600
 
-    if user_answer.isdigit() and int(user_answer) == answer:
-        print("Correct! The Vault is now unlocked.")
-        user_data['vault_locked'] = False
-        user_data['savings'] = random.randint(100, 1000)  # Vault contains some savings now
-        save_user_data()
-        main_menu()
-    else:
-        print("Incorrect answer. Try again.")
-        vault_puzzle()
+    choice = st.selectbox("Choose a path to reveal fate:", choices)
+    st.write(f"6-month Projection: {'Gain' if timeline[choice] > 0 else 'Loss'} of £{abs(timeline[choice])}")
 
-# Exit the game
-def exit_game():
-    print("Thank you for playing! Your progress has been saved.")
-    save_user_data()
-    exit()
+# 4. Redacted Risk Analysis
+def risk_analysis():
+    st.subheader("Redacted Risk Analysis")
+    decision = st.text_input("Enter a financial decision:")
+    if decision:
+        score = random.randint(0, 99)
+        st.code(f"R-{score:02d}: Risk classified.")
+        if st.button("Override Warning"):
+            st.warning("Proceed at your own risk. Trail logged.")
 
-# Load data on game start
-load_user_data()
+# 5. Ghost Mode
+def ghost_mode():
+    st.subheader("Ghost Mode")
+    if st.button("Burn the Trail"):
+        os.remove("user_data.json")
+        st.success("All session history deleted.")
 
-# Start the game
-main_menu()
+# 6. Time Capsules
+def time_capsules():
+    st.subheader("Time Capsules")
+    if st.button("Bury a Thought Capsule"):
+        capsule = st.text_area("What's on your mind?")
+        user_data['time_capsules'].append({"msg": capsule, "time": str(datetime.datetime.now())})
+        st.success("Sealed away. Will reveal when you return.")
 
+# 7. Finance Glitch Generator
+def finance_glitch():
+    st.subheader("Finance Glitch Generator")
+    if st.button("Simulate System Glitch"):
+        glitch_value = random.randint(-200, 500)
+        user_data['balance'] += glitch_value
+        st.info(f"System error: £{glitch_value} {'added' if glitch_value >=0 else 'removed'} from account.")
+
+# ----------------------------- UI -----------------------------
+
+st.title("🧊 Ghost Bank")
+st.caption("""Where money meets mystery.
+A terminal into the financial shadows.
+""")
+
+menu = st.sidebar.selectbox("Enter a Chamber:", [
+    "Dashboard", "Black Mirror Budget AI", "ShadowMarket Scanner", "Timeline Collapse Mode",
+    "Redacted Risk Analysis", "Ghost Mode", "Time Capsules", "Finance Glitch Generator"
+])
+
+if menu == "Dashboard":
+    st.header("Welcome, Ghost Seeker")
+    st.metric("Balance", f"£{user_data['balance']}")
+    st.metric("Debt", f"£{user_data['debt']}")
+    st.metric("Savings", f"£{user_data['savings']}")
+
+elif menu == "Black Mirror Budget AI":
+    budget_ai()
+elif menu == "ShadowMarket Scanner":
+    shadow_market()
+elif menu == "Timeline Collapse Mode":
+    timeline_mode()
+elif menu == "Redacted Risk Analysis":
+    risk_analysis()
+elif menu == "Ghost Mode":
+    ghost_mode()
+elif menu == "Time Capsules":
+    time_capsules()
+elif menu == "Finance Glitch Generator":
+    finance_glitch()
+
+save_data(user_data)
