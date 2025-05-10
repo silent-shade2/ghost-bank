@@ -1,123 +1,50 @@
-import random
-import json
-import os
+# 👻 GHOST BANK: Financial Shadows Await
 
-# User Data (load from a file or initialize)
-user_data = {
-    "name": "Ghost Seeker",
-    "balance": 500,
-    "debt": 0,
-    "savings": 0,
-    "investments": 0,
-    "spending_history": [],
-    "vault_locked": True,
-    "time_capsules": [],
-    "challenges_completed": []
-}
+Welcome to **Ghost Bank**, the mysterious and immersive financial tracking app where your money isn't just numbers — it's echoes of decisions, shadows of ambition, and whispers of wealth. Navigate your personal economy through haunted ledgers, phantom predictions, and cursed vaults that test your strategy and control.
 
-# Load user data from a JSON file
-def load_user_data():
-    global user_data
-    if os.path.exists("user_data.json"):
-        with open("user_data.json", "r") as file:
-            user_data = json.load(file)
+> _"In the darkness of doubt, let your savings be your candle."_  
 
-# Save user data to a JSON file
-def save_user_data():
-    with open("user_data.json", "w") as file:
-        json.dump(user_data, file)
+---
 
-# Display the main menu
-def main_menu():
-    print("\nWelcome to Ghost Bank!")
-    print("1. Phantom's Financial Diary")
-    print("2. Ghostly Budget Tracker")
-    print("3. Spectral Wealth Forecast")
-    print("4. The Forgotten Vault")
-    print("5. Exit")
+## 🧩 Features
 
-    choice = input("Choose an option: ")
+### 🕯 Phantom's Financial Diary (Time Capsule)
+Write your thoughts and future intentions. Locked away like a secret, these entries resurface with time to reveal how far you've come — or fallen.
 
-    if choice == "1":
-        time_capsule()
-    elif choice == "2":
-        budget_tracker()
-    elif choice == "3":
-        wealth_forecast()
-    elif choice == "4":
-        forgotten_vault()
-    elif choice == "5":
-        exit_game()
-    else:
-        print("Invalid choice! Try again.")
-        main_menu()
+### 💀 Ghostly Budget Tracker (Ethereal Ledger)
+Monitor your balance, savings, debt, and expenses through a haunted UI. Every choice leaves a trace in the shadows.
 
-# Phantom's Financial Diary (Time Capsule)
-def time_capsule():
-    print("\nPhantom's Financial Diary")
-    entry = input("Enter your financial thoughts: ")
-    
-    if entry.strip() == "":
-        print("You must enter some text!")
-        time_capsule()
-    else:
-        user_data["time_capsules"].append(entry)
-        print(f"Your entry has been saved! You wrote: {entry}")
-        save_user_data()
-        main_menu()
+### 🔮 Spectral Wealth Forecast (Dark Predictions)
+Peer into the mists of financial fate. Get cryptic forecasts and prepare for what the future might—or might not—hold.
 
-# Ghostly Budget Tracker
-def budget_tracker():
-    print("\nGhostly Budget Tracker")
-    print(f"Current Balance: £{user_data['balance']}")
-    print(f"Debt: £{user_data['debt']}")
-    print(f"Savings: £{user_data['savings']}")
-    main_menu()
+### 🔐 The Forgotten Vault (Hidden Savings)
+Unlock ancient coffers hidden within the app. Solve puzzles or meet conditions to access your spectral stash.
 
-# Spectral Wealth Forecast
-def wealth_forecast():
-    print("\nSpectral Wealth Forecast")
-    forecast = f"In 6 months, you will have £{user_data['balance'] + random.randint(0, 1000)}."
-    print(forecast)
-    main_menu()
+### 🧠 Haunted Companion (Ghost Guide)
+Coming soon: A cryptic assistant that whispers personalised tips based on your behaviour and goals.
 
-# The Forgotten Vault (Locked until puzzle is solved)
-def forgotten_vault():
-    print("\nThe Forgotten Vault")
-    if user_data['vault_locked']:
-        print("The Vault is Locked! Solve the mystery to unlock it.")
-        vault_puzzle()
-    else:
-        print(f"The Vault contains £{user_data['savings']} in hidden funds.")
-        main_menu()
+### 💸 Debt’s Shadow (Path of the Fallen)
+Track and tackle your debt through a visualised dark path. Redemption lies in confronting what you owe.
 
-# Vault puzzle: user needs to solve a math question to unlock
-def vault_puzzle():
-    print("Solve this math puzzle to unlock the vault:")
-    num1 = random.randint(1, 20)
-    num2 = random.randint(1, 20)
-    answer = num1 + num2
-    
-    user_answer = input(f"What is {num1} + {num2}? ")
+### 🕳️ Echoes of the Past (Financial Reflections)
+Reflect on past financial decisions and entries. Learn from the ghosts of choices past.
 
-    if user_answer.isdigit() and int(user_answer) == answer:
-        print("Correct! The Vault is now unlocked.")
-        user_data['vault_locked'] = False
-        user_data['savings'] = random.randint(100, 1000)  # Vault contains some savings now
-        save_user_data()
-        main_menu()
-    else:
-        print("Incorrect answer. Try again.")
-        vault_puzzle()
+### 🧪 Alchemist’s Brew (Investment Potion)
+Experiment with virtual investments. Watch them grow or wither over time as fate—and math—dictates.
 
-# Exit the game
-def exit_game():
-    print("Thank you for playing! Your progress has been saved.")
-    save_user_data()
-    exit()
+---
 
-# Load data on game start
-load_user_data()
+## 🖥️ Tech Stack
 
-# Start the game
-main_menu()
+- **Language:** Python 3.x  
+- **Graphics & UI:** [Pygame](https://www.pygame.org/news)  
+- **Data Handling:** JSON (for storing user progress)
+
+---
+
+## 🚀 Getting Started
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/your-username/ghost-bank.git
+cd ghost-bank
